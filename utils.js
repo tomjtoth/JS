@@ -1,11 +1,11 @@
+const evilParent = /\(([^()]+)\)/;
+const evilNumber = `(?:\\d*\\.)?\\d+`;
+
+const evilPower = new RegExp(`(${evilNumber})\\^(${evilNumber})`);
+const evilMulDiv = new RegExp(`(${evilNumber})([/*])(${evilNumber})`);
+const evilAddSub = new RegExp(`(${evilNumber})([-+])(${evilNumber})`);
+
 function evilMath(x) {
-
-    const evilParent = /\(([^()]+)\)/;
-    const evilNumber = `(?:\\d*\\.)?\\d+`;
-    const evilPower = new RegExp(`(${evilNumber})\\^(${evilNumber})`);
-    const evilMulDiv = new RegExp(`(${evilNumber})([/*])(${evilNumber})`);
-    const evilAddSub = new RegExp(`(${evilNumber})([-+])(${evilNumber})`);
-
     function recurse(x) {
         // resolve all parenthesed groups from smalles to largest
         while (evilParent.test(x)) {
@@ -36,9 +36,16 @@ function evilMath(x) {
         return x
     }
     
-    return recurse(
+    return Number(recurse(x
+
         // adjust decimal separators and remove whitespace
-        x.replaceAll(",", ".").replaceAll(" ", "")
-    )
+        .replaceAll(",", ".").replaceAll(" ", "")
+
+        // numbers or parents next to other parents. are to be multiplied
+        .replace(/(?<=\d)(?=\()|(?<=\))(?=\()|(?<=\))(?=\d)/g, "*")
+    ))
 
 }
+
+// EXPORTS BELOW
+exports.evilMath = evilMath
